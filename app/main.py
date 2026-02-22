@@ -16,6 +16,7 @@ from app.admin.views import (
 )
 from app.admin.auth import AdminAuth
 from app.api.v1 import categories, products, orders, cart, customer
+from app.admin import orders_dashboard
 
 
 tags_metadata = [
@@ -67,6 +68,7 @@ app.include_router(products.router,  prefix="/api/v1", tags=["products"])
 app.include_router(cart.router,      prefix="/api/v1", tags=["cart"])
 app.include_router(orders.router,    prefix="/api/v1", tags=["orders"])
 app.include_router(customer.router,  prefix="/api/v1", tags=["customers"])
+app.include_router(orders_dashboard.router, tags=["admin-custom"])
 
 
 @app.get("/")
