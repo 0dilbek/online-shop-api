@@ -62,7 +62,7 @@
         }
         td { padding: 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
 
-        .status-badge {
+        .status-badge, .status-select {
             display: inline-flex;
             align-items: center;
             padding: 0.25rem 0.75rem;
@@ -70,12 +70,18 @@
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: capitalize;
+            border: 1px solid transparent;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
         }
-        .status-new { background: #dbeafe; color: #1e40af; }
-        .status-confirmed { background: #ede9fe; color: #5b21b6; }
-        .status-delivering { background: #fef3c7; color: #92400e; }
-        .status-completed { background: #dcfce7; color: #166534; }
-        .status-canceled { background: #fee2e2; color: #991b1b; }
+        .status-select:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+        .status-new, .status-select.status-new { background: #dbeafe; color: #1e40af; }
+        .status-confirmed, .status-select.status-confirmed { background: #ede9fe; color: #5b21b6; }
+        .status-delivering, .status-select.status-delivering { background: #fef3c7; color: #92400e; }
+        .status-completed, .status-select.status-completed { background: #dcfce7; color: #166534; }
+        .status-canceled, .status-select.status-canceled { background: #fee2e2; color: #991b1b; }
 
         .btn-expand {
             background: transparent;
@@ -172,9 +178,11 @@
                             {{ order.address }}
                         </td>
                         <td>
-                            <span class="status-badge status-{{ order.status }}">
-                                {{ order.status }}
-                            </span>
+                            <select class="status-select status-{{ order.status }}" onchange="updateStatus({{ order.id }}, this)">
+                                {% for s in statuses %}
+                                <option value="{{ s }}" {% if s == order.status %}selected{% endif %}>{{ s }}</option>
+                                {% endfor %}
+                            </select>
                         </td>
                         <td class="date">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td class="price">{{ "{:,}".format(order.total_price).replace(',', ' ') }} so'm</td>
@@ -236,6 +244,38 @@
             
             if (!isVisible) {
                 row.style.animation = 'fadeIn 0.3s ease-out forwards';
+            }
+        }
+
+        async function updateStatus(orderId, select) {
+            const newStatus = select.value;
+            const originalStatus = select.className.split(' ').find(c => c.startsWith('status-')).replace('status-', '');
+            
+            select.disabled = true;
+            
+            try {
+                const response = await fetch(`/dashboard/orders/${orderId}/status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ status: newStatus }),
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    select.className = `status-select status-${data.new_status}`;
+                    console.log(`Status updated for order #${orderId} to ${data.new_status}`);
+                } else {
+                    alert('Statusni yangilashda xatolik yuz berdi');
+                    select.value = originalStatus;
+                }
+            } catch (error) {
+                console.error('Error updating status:', error);
+                alert('Server bilan bog\'lanishda xatolik');
+                select.value = originalStatus;
+            } finally {
+                select.disabled = false;
             }
         }
     </script>
