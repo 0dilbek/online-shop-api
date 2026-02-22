@@ -49,7 +49,8 @@ app = FastAPI(
 )
 
 # Template engine sozlamalari
-templates = Jinja2Templates(directory="app/templates")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "app", "templates"))
 
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 

@@ -24,6 +24,7 @@
 <body class="bg-gray-50 overflow-hidden">
     <div id="root"></div>
 
+    {% raw %}
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
 
@@ -406,5 +407,6 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
+    {% endraw %}
 </body>
 </html>
