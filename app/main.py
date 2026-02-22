@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqladmin import Admin
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -46,6 +47,14 @@ app = FastAPI(
 )
 
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # statik fayllar
 app.mount("/static", StaticFiles(directory="static"), name="static")
