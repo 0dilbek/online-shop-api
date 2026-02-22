@@ -41,6 +41,190 @@
             return <i data-lucide={name} className={className} style={{ width: size, height: size, strokeWidth }}></i>;
         };
 
+        // Simplified Screens
+        const Splash = () => (
+            <div className="fixed inset-0 bg-[#00964b] flex flex-col items-center justify-center p-6 text-white z-50">
+                <div className="bg-white p-6 rounded-3xl shadow-2xl transform -rotate-3 mb-6">
+                    <Icon name="shopping-basket" className="w-20 h-20 text-[#00964b]" />
+                </div>
+                <h1 className="text-8xl font-black italic tracking-tighter mb-8 drop-shadow-lg">Tez</h1>
+                <p className="text-xl font-medium leading-tight opacity-90 text-center">Tez va ishonchli bozor yetkazib berish</p>
+            </div>
+        );
+
+        const Auth = ({ screen, setScreen, formData, setFormData, showPassword, handleAuth }) => (
+            <div className="w-full max-w-[400px] mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col min-h-[600px] p-8 mt-10">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{screen === 'login' ? 'Kirish' : 'Ro\'yxatdan o\'tish'}</h1>
+                <div className="space-y-4 mt-8">
+                    {screen === 'register' && (
+                        <input type="text" placeholder="Ism" className="w-full bg-[#f4f6f9] rounded-xl p-4" 
+                            value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
+                    )}
+                    <input type="tel" placeholder="Telefon" className="w-full bg-[#f4f6f9] rounded-xl p-4" 
+                        value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                    <input type={showPassword ? "text" : "password"} placeholder="Parol" className="w-full bg-[#f4f6f9] rounded-xl p-4" 
+                        value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                    {screen === 'register' && (
+                        <textarea placeholder="Manzil" className="w-full bg-[#f4f6f9] rounded-xl p-4" 
+                            value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                    )}
+                </div>
+                <button onClick={handleAuth} className="w-full bg-[#00964b] text-white font-bold py-4 rounded-xl mt-auto shadow-lg">
+                    {screen === 'login' ? 'Kirish' : 'Ro\'yxatdan o\'tish'}
+                </button>
+                <p className="text-center mt-4 text-sm">
+                    {screen === 'login' ? "Akkauntingiz yo'qmi?" : "Akkauntingiz bormi?"}
+                    <button onClick={() => setScreen(screen === 'login' ? 'register' : 'login')} className="text-[#00964b] font-bold ml-1">
+                        {screen === 'login' ? "Ro'yxatdan o'tish" : "Kirish"}
+                    </button>
+                </p>
+            </div>
+        );
+
+        const BottomNav = ({ active, setScreen }) => (
+            <div className="absolute bottom-0 left-0 right-0 bg-white border-t p-4 flex justify-around">
+                <button onClick={() => setScreen('home')} className={`flex flex-col items-center gap-1 ${active === 'home' ? 'text-[#00964b]' : 'text-gray-400'}`}><Icon name="home" /><span className="text-[10px] font-bold">Asosiy</span></button>
+                <button onClick={() => setScreen('cart')} className={`flex flex-col items-center gap-1 ${active === 'cart' ? 'text-[#00964b]' : 'text-gray-400'}`}><Icon name="shopping-cart" /><span className="text-[10px] font-bold">Savat</span></button>
+                <button onClick={() => setScreen('profile')} className={`flex flex-col items-center gap-1 ${active === 'profile' ? 'text-[#00964b]' : 'text-gray-400'}`}><Icon name="user" /><span className="text-[10px] font-bold">Profil</span></button>
+            </div>
+        );
+
+        const HomeView = ({ products, categories, activeCategory, setActiveCategory, searchQuery, setSearchQuery, cartItems, setScreen, addToCart, setProductForDetails }) => (
+            <div className="w-full h-screen bg-white flex flex-col max-w-[500px] mx-auto relative shadow-2xl">
+                <div className="px-6 py-4 flex items-center justify-between sticky top-0 bg-white z-10 border-b">
+                    <div className="flex items-center gap-2">
+                         <div className="w-8 h-8 bg-[#00964b] rounded-lg p-1.5"><Icon name="shopping-basket" className="text-white" size={20} /></div>
+                         <h2 className="text-xl font-bold">Tez Bozor</h2>
+                    </div>
+                    <button onClick={() => setScreen('cart')} className="relative p-2">
+                        <Icon name="shopping-cart" className="text-[#00964b]" />
+                        {cartItems.length > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartItems.length}</span>}
+                    </button>
+                </div>
+                <div className="flex-grow overflow-y-auto pb-24 px-6 pt-4">
+                    <div className="relative mb-6">
+                        <Icon name="search" className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                        <input type="text" placeholder="Qidirish..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} 
+                            className="w-full bg-[#f4f6f9] rounded-xl py-3 pl-12 pr-4 outline-none focus:ring-2 focus:ring-[#00964b]" />
+                    </div>
+                    <div className="flex gap-2 overflow-x-auto no-scrollbar mb-8">
+                        <button onClick={() => setActiveCategory('Barchasi')} className={`px-6 py-2 rounded-xl font-bold whitespace-nowrap ${activeCategory === 'Barchasi' ? 'bg-[#00964b] text-white' : 'bg-gray-100 text-gray-600'}`}>Barchasi</button>
+                        {categories.map(c => (
+                            <button key={c.id} onClick={() => setActiveCategory(c.id)} className={`px-6 py-2 rounded-xl font-bold whitespace-nowrap ${activeCategory === c.id ? 'bg-[#00964b] text-white' : 'bg-gray-100 text-gray-600'}`}>{c.name}</button>
+                        ))}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        {products.map(p => (
+                            <div key={p.id} onClick={() => {setProductForDetails(p); setScreen('product_details');}} className="bg-white rounded-2xl border p-2 flex flex-col cursor-pointer">
+                                <img src={p.image} className="w-full aspect-square object-cover rounded-xl mb-3" />
+                                <h4 className="font-bold text-sm line-clamp-2 h-10">{p.name}</h4>
+                                <p className="text-[#00964b] font-bold mt-2">{p.priceStr}</p>
+                                <button onClick={(e) => {e.stopPropagation(); addToCart(p);}} className="bg-[#00964b] text-white rounded-lg py-2 mt-2 text-xs font-bold">+ Savatga</button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <BottomNav active="home" setScreen={setScreen} />
+            </div>
+        );
+
+        const CartView = ({ cartItems, setCartItems, cartTab, setCartTab, orderHistory, placeOrder, calculateTotal, setScreen }) => (
+            <div className="w-full h-screen bg-[#f8f9fa] flex flex-col max-w-[500px] mx-auto relative shadow-2xl">
+                <div className="px-6 py-4 flex items-center justify-between bg-white border-b">
+                    <button onClick={() => setScreen('home')}><Icon name="arrow-left" /></button>
+                    <h2 className="text-xl font-bold">Savat</h2>
+                    <Icon name="shopping-cart" className="text-[#00964b]" />
+                </div>
+                <div className="flex p-4 gap-2">
+                    <button onClick={() => setCartTab('current')} className={`flex-1 py-3 rounded-xl font-bold ${cartTab === 'current' ? 'bg-[#00964b] text-white' : 'bg-white text-gray-400'}`}>Hozirgi</button>
+                    <button onClick={() => setCartTab('history')} className={`flex-1 py-3 rounded-xl font-bold ${cartTab === 'history' ? 'bg-[#00964b] text-white' : 'bg-white text-gray-400'}`}>Tarix</button>
+                </div>
+                <div className="flex-grow overflow-y-auto px-6 pb-40">
+                    {cartTab === 'current' ? (
+                        cartItems.length > 0 ? cartItems.map(item => (
+                            <div key={item.id} className="bg-white p-4 rounded-2xl mb-4 flex gap-4 items-center">
+                                <img src={item.image} className="w-16 h-16 rounded-xl object-cover" />
+                                <div className="flex-grow">
+                                    <h4 className="font-bold">{item.name}</h4>
+                                    <p className="text-[#00964b] font-bold">{item.priceStr} x {item.quantity}</p>
+                                </div>
+                                <button onClick={() => setCartItems(prev => prev.filter(i => i.id !== item.id))}><Icon name="trash-2" className="text-red-500" /></button>
+                            </div>
+                        )) : <div className="text-center py-20 text-gray-400">Savat bo'sh</div>
+                    ) : (
+                        orderHistory.map(o => (
+                            <div key={o.id} className="bg-white p-5 rounded-2xl mb-4 border flex justify-between items-center cursor-pointer">
+                                <div>
+                                    <p className="text-xs text-gray-400 font-bold">#{o.id} · {o.date}</p>
+                                    <h4 className="text-lg font-bold">{o.totalStr}</h4>
+                                </div>
+                                <Icon name="chevron-right" className="text-gray-300" />
+                            </div>
+                        ))
+                    )}
+                </div>
+                {cartTab === 'current' && cartItems.length > 0 && (
+                    <div className="absolute bottom-24 left-6 right-6 bg-white p-6 rounded-3xl shadow-xl border">
+                        <div className="flex justify-between mb-4 font-bold text-xl"><span>Jami:</span><span className="text-[#00964b]">{calculateTotal()}</span></div>
+                        <button onClick={placeOrder} className="w-full bg-[#00964b] text-white font-bold py-4 rounded-2xl">Buyurtma berish</button>
+                    </div>
+                )}
+                <BottomNav active="cart" setScreen={setScreen} />
+            </div>
+        );
+
+        const ProductDetails = ({ productForDetails, addToCart, setScreen }) => (
+            <div className="w-full h-screen bg-white flex flex-col max-w-[500px] mx-auto relative overflow-hidden">
+                <div className="px-6 py-4 flex items-center justify-between border-b bg-white z-10">
+                    <button onClick={() => setScreen('home')}><Icon name="arrow-left" /></button>
+                    <h2 className="font-bold">Mahsulot</h2>
+                    <div />
+                </div>
+                <div className="flex-grow overflow-y-auto">
+                    <img src={productForDetails?.image} className="w-full aspect-square object-cover" />
+                    <div className="p-8">
+                        <h1 className="text-3xl font-bold mb-2">{productForDetails?.name}</h1>
+                        <p className="text-[#00964b] text-2xl font-bold mb-6">{productForDetails?.priceStr}</p>
+                        <h3 className="text-lg font-bold mb-4">Mahsulot haqida</h3>
+                        <p className="text-gray-500 leading-relaxed">{productForDetails?.description || 'Tavsif yo\'q'}</p>
+                    </div>
+                </div>
+                <div className="p-6 bg-gray-50 pb-24">
+                    <button onClick={() => addToCart(productForDetails)} className="w-full bg-[#00964b] text-white font-bold py-4 rounded-2xl shadow-lg">Savatga qo'shish</button>
+                </div>
+                <BottomNav active="home" setScreen={setScreen} />
+            </div>
+        );
+
+        const ProfileView = ({ currentUser, setCurrentUser, setScreen }) => (
+            <div className="w-full h-screen bg-[#f8f9fa] flex flex-col max-w-[500px] mx-auto relative">
+                <div className="bg-white p-6 border-b flex items-center justify-between">
+                     <button onClick={() => setScreen('home')}><Icon name="arrow-left" /></button>
+                     <h2 className="font-bold">Profil</h2>
+                     <div />
+                </div>
+                <div className="p-8 flex flex-col items-center">
+                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-md mb-4">
+                        <Icon name="user" className="text-[#00964b]" size={40} />
+                    </div>
+                    <h3 className="text-2xl font-bold">{currentUser?.full_name || 'Mehmon'}</h3>
+                    <p className="text-gray-400">{currentUser?.phone || 'Telefon raqam yo\'q'}</p>
+                    
+                    <div className="w-full mt-10 space-y-4">
+                        <div className="bg-white p-4 rounded-2xl flex items-center gap-4">
+                            <div className="bg-gray-50 p-2 rounded-lg"><Icon name="map-pin" className="text-orange-500" size={20} /></div>
+                            <div><p className="text-[10px] font-bold text-gray-400">MANZIL</p><p className="font-bold">{currentUser?.default_address || 'Kiritilmagan'}</p></div>
+                        </div>
+                    </div>
+                    
+                    <button onClick={() => {setCurrentUser(null); setScreen('login');}} className="mt-10 flex items-center gap-2 text-red-500 font-bold">
+                        <Icon name="log-out" size={20} /> Tizimdan chiqish
+                    </button>
+                </div>
+                <BottomNav active="profile" setScreen={setScreen} />
+            </div>
+        );
+
         const App = () => {
             const [screen, setScreen] = useState('splash');
             const [activeCategory, setActiveCategory] = useState('Barchasi');
@@ -210,196 +394,57 @@
                 return total.toLocaleString('ru-RU').replace(/,/g, ' ') + " so'm";
             };
 
-            // Simplified Screens
-            const Splash = () => (
-                <div className="fixed inset-0 bg-[#00964b] flex flex-col items-center justify-center p-6 text-white z-50">
-                    <div className="bg-white p-6 rounded-3xl shadow-2xl transform -rotate-3 mb-6">
-                        <Icon name="shopping-basket" className="w-20 h-20 text-[#00964b]" />
-                    </div>
-                    <h1 className="text-8xl font-black italic tracking-tighter mb-8 drop-shadow-lg">Tez</h1>
-                    <p className="text-xl font-medium leading-tight opacity-90 text-center">Tez va ishonchli bozor yetkazib berish</p>
-                </div>
-            );
-
-            const Auth = () => (
-                <div className="w-full max-w-[400px] mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col min-h-[600px] p-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{screen === 'login' ? 'Kirish' : 'Ro\'yxatdan o\'tish'}</h1>
-                    <div className="space-y-4 mt-8">
-                        {screen === 'register' && (
-                            <input type="text" placeholder="Ism" className="w-full bg-[#f4f6f9] rounded-xl p-4" 
-                                value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
-                        )}
-                        <input type="tel" placeholder="Telefon" className="w-full bg-[#f4f6f9] rounded-xl p-4" 
-                            value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
-                        <input type={showPassword ? "text" : "password"} placeholder="Parol" className="w-full bg-[#f4f6f9] rounded-xl p-4" 
-                            value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
-                        {screen === 'register' && (
-                            <textarea placeholder="Manzil" className="w-full bg-[#f4f6f9] rounded-xl p-4" 
-                                value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
-                        )}
-                    </div>
-                    <button onClick={handleAuth} className="w-full bg-[#00964b] text-white font-bold py-4 rounded-xl mt-auto shadow-lg">
-                        {screen === 'login' ? 'Kirish' : 'Ro\'yxatdan o\'tish'}
-                    </button>
-                    <p className="text-center mt-4 text-sm">
-                        {screen === 'login' ? "Akkauntingiz yo'qmi?" : "Akkauntingiz bormi?"}
-                        <button onClick={() => setScreen(screen === 'login' ? 'register' : 'login')} className="text-[#00964b] font-bold ml-1">
-                            {screen === 'login' ? "Ro'yxatdan o'tish" : "Kirish"}
-                        </button>
-                    </p>
-                </div>
-            );
-
-            const HomeView = () => (
-                <div className="w-full h-screen bg-white flex flex-col max-w-[500px] mx-auto relative shadow-2xl">
-                    <div className="px-6 py-4 flex items-center justify-between sticky top-0 bg-white z-10 border-b">
-                        <div className="flex items-center gap-2">
-                             <div className="w-8 h-8 bg-[#00964b] rounded-lg p-1.5"><Icon name="shopping-basket" className="text-white" size={20} /></div>
-                             <h2 className="text-xl font-bold">Tez Bozor</h2>
-                        </div>
-                        <button onClick={() => setScreen('cart')} className="relative p-2">
-                            <Icon name="shopping-cart" className="text-[#00964b]" />
-                            {cartItems.length > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartItems.length}</span>}
-                        </button>
-                    </div>
-                    <div className="flex-grow overflow-y-auto pb-24 px-6 pt-4">
-                        <div className="relative mb-6">
-                            <Icon name="search" className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                            <input type="text" placeholder="Qidirish..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} 
-                                className="w-full bg-[#f4f6f9] rounded-xl py-3 pl-12 pr-4 outline-none focus:ring-2 focus:ring-[#00964b]" />
-                        </div>
-                        <div className="flex gap-2 overflow-x-auto no-scrollbar mb-8">
-                            <button onClick={() => setActiveCategory('Barchasi')} className={`px-6 py-2 rounded-xl font-bold whitespace-nowrap ${activeCategory === 'Barchasi' ? 'bg-[#00964b] text-white' : 'bg-gray-100 text-gray-600'}`}>Barchasi</button>
-                            {categories.map(c => (
-                                <button key={c.id} onClick={() => setActiveCategory(c.id)} className={`px-6 py-2 rounded-xl font-bold whitespace-nowrap ${activeCategory === c.id ? 'bg-[#00964b] text-white' : 'bg-gray-100 text-gray-600'}`}>{c.name}</button>
-                            ))}
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            {products.map(p => (
-                                <div key={p.id} onClick={() => {setProductForDetails(p); setScreen('product_details');}} className="bg-white rounded-2xl border p-2 flex flex-col cursor-pointer">
-                                    <img src={p.image} className="w-full aspect-square object-cover rounded-xl mb-3" />
-                                    <h4 className="font-bold text-sm line-clamp-2 h-10">{p.name}</h4>
-                                    <p className="text-[#00964b] font-bold mt-2">{p.priceStr}</p>
-                                    <button onClick={(e) => {e.stopPropagation(); addToCart(p);}} className="bg-[#00964b] text-white rounded-lg py-2 mt-2 text-xs font-bold">+ Savatga</button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <BottomNav active="home" />
-                </div>
-            );
-
-            const CartView = () => (
-                <div className="w-full h-screen bg-[#f8f9fa] flex flex-col max-w-[500px] mx-auto relative shadow-2xl">
-                    <div className="px-6 py-4 flex items-center justify-between bg-white border-b">
-                        <button onClick={() => setScreen('home')}><Icon name="arrow-left" /></button>
-                        <h2 className="text-xl font-bold">Savat</h2>
-                        <Icon name="shopping-cart" className="text-[#00964b]" />
-                    </div>
-                    <div className="flex p-4 gap-2">
-                        <button onClick={() => setCartTab('current')} className={`flex-1 py-3 rounded-xl font-bold ${cartTab === 'current' ? 'bg-[#00964b] text-white' : 'bg-white text-gray-400'}`}>Hozirgi</button>
-                        <button onClick={() => setCartTab('history')} className={`flex-1 py-3 rounded-xl font-bold ${cartTab === 'history' ? 'bg-[#00964b] text-white' : 'bg-white text-gray-400'}`}>Tarix</button>
-                    </div>
-                    <div className="flex-grow overflow-y-auto px-6 pb-40">
-                        {cartTab === 'current' ? (
-                            cartItems.length > 0 ? cartItems.map(item => (
-                                <div key={item.id} className="bg-white p-4 rounded-2xl mb-4 flex gap-4 items-center">
-                                    <img src={item.image} className="w-16 h-16 rounded-xl object-cover" />
-                                    <div className="flex-grow">
-                                        <h4 className="font-bold">{item.name}</h4>
-                                        <p className="text-[#00964b] font-bold">{item.priceStr} x {item.quantity}</p>
-                                    </div>
-                                    <button onClick={() => setCartItems(prev => prev.filter(i => i.id !== item.id))}><Icon name="trash-2" className="text-red-500" /></button>
-                                </div>
-                            )) : <div className="text-center py-20 text-gray-400">Savat bo'sh</div>
-                        ) : (
-                            orderHistory.map(o => (
-                                <div key={o.id} className="bg-white p-5 rounded-2xl mb-4 border flex justify-between items-center cursor-pointer">
-                                    <div>
-                                        <p className="text-xs text-gray-400 font-bold">#{o.id} · {o.date}</p>
-                                        <h4 className="text-lg font-bold">{o.totalStr}</h4>
-                                    </div>
-                                    <Icon name="chevron-right" className="text-gray-300" />
-                                </div>
-                            ))
-                        )}
-                    </div>
-                    {cartTab === 'current' && cartItems.length > 0 && (
-                        <div className="absolute bottom-24 left-6 right-6 bg-white p-6 rounded-3xl shadow-xl border">
-                            <div className="flex justify-between mb-4 font-bold text-xl"><span>Jami:</span><span className="text-[#00964b]">{calculateTotal()}</span></div>
-                            <button onClick={placeOrder} className="w-full bg-[#00964b] text-white font-bold py-4 rounded-2xl">Buyurtma berish</button>
-                        </div>
-                    )}
-                    <BottomNav active="cart" />
-                </div>
-            );
-
-            const BottomNav = ({ active }) => (
-                <div className="absolute bottom-0 left-0 right-0 bg-white border-t p-4 flex justify-around">
-                    <button onClick={() => setScreen('home')} className={`flex flex-col items-center gap-1 ${active === 'home' ? 'text-[#00964b]' : 'text-gray-400'}`}><Icon name="home" /><span className="text-[10px] font-bold">Asosiy</span></button>
-                    <button onClick={() => setScreen('cart')} className={`flex flex-col items-center gap-1 ${active === 'cart' ? 'text-[#00964b]' : 'text-gray-400'}`}><Icon name="shopping-cart" /><span className="text-[10px] font-bold">Savat</span></button>
-                    <button onClick={() => setScreen('profile')} className={`flex flex-col items-center gap-1 ${active === 'profile' ? 'text-[#00964b]' : 'text-gray-400'}`}><Icon name="user" /><span className="text-[10px] font-bold">Profil</span></button>
-                </div>
-            );
-
-            const ProductDetails = () => (
-                <div className="w-full h-screen bg-white flex flex-col max-w-[500px] mx-auto relative overflow-hidden">
-                    <div className="px-6 py-4 flex items-center justify-between border-b bg-white z-10">
-                        <button onClick={() => setScreen('home')}><Icon name="arrow-left" /></button>
-                        <h2 className="font-bold">Mahsulot</h2>
-                        <div />
-                    </div>
-                    <div className="flex-grow overflow-y-auto">
-                        <img src={productForDetails?.image} className="w-full aspect-square object-cover" />
-                        <div className="p-8">
-                            <h1 className="text-3xl font-bold mb-2">{productForDetails?.name}</h1>
-                            <p className="text-[#00964b] text-2xl font-bold mb-6">{productForDetails?.priceStr}</p>
-                            <h3 className="text-lg font-bold mb-4">Mahsulot haqida</h3>
-                            <p className="text-gray-500 leading-relaxed">{productForDetails?.description || 'Tavsif yo\'q'}</p>
-                        </div>
-                    </div>
-                    <div className="p-6 bg-gray-50 pb-24">
-                        <button onClick={() => addToCart(productForDetails)} className="w-full bg-[#00964b] text-white font-bold py-4 rounded-2xl shadow-lg">Savatga qo'shish</button>
-                    </div>
-                    <BottomNav active="home" />
-                </div>
-            );
-
-            const ProfileView = () => (
-                <div className="w-full h-screen bg-[#f8f9fa] flex flex-col max-w-[500px] mx-auto relative">
-                    <div className="bg-white p-6 border-b flex items-center justify-between">
-                         <button onClick={() => setScreen('home')}><Icon name="arrow-left" /></button>
-                         <h2 className="font-bold">Profil</h2>
-                         <div />
-                    </div>
-                    <div className="p-8 flex flex-col items-center">
-                        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-md mb-4">
-                            <Icon name="user" className="text-[#00964b]" size={40} />
-                        </div>
-                        <h3 className="text-2xl font-bold">{currentUser?.full_name || 'Mehmon'}</h3>
-                        <p className="text-gray-400">{currentUser?.phone || 'Telefon raqam yo\'q'}</p>
-                        
-                        <div className="w-full mt-10 space-y-4">
-                            <div className="bg-white p-4 rounded-2xl flex items-center gap-4">
-                                <div className="bg-gray-50 p-2 rounded-lg"><Icon name="map-pin" className="text-orange-500" size={20} /></div>
-                                <div><p className="text-[10px] font-bold text-gray-400">MANZIL</p><p className="font-bold">{currentUser?.default_address || 'Kiritilmagan'}</p></div>
-                            </div>
-                        </div>
-                        
-                        <button onClick={() => {setCurrentUser(null); setScreen('login');}} className="mt-10 flex items-center gap-2 text-red-500 font-bold">
-                            <Icon name="log-out" size={20} /> Tizimdan chiqish
-                        </button>
-                    </div>
-                    <BottomNav active="profile" />
-                </div>
-            );
-
             if (screen === 'splash') return <Splash />;
-            if (screen === 'login' || screen === 'register') return <Auth />;
-            if (screen === 'home') return <HomeView />;
-            if (screen === 'cart') return <CartView />;
-            if (screen === 'product_details') return <ProductDetails />;
-            if (screen === 'profile') return <ProfileView />;
+            if (screen === 'login' || screen === 'register') return (
+                <Auth 
+                    screen={screen} 
+                    setScreen={setScreen} 
+                    formData={formData} 
+                    setFormData={setFormData} 
+                    showPassword={showPassword} 
+                    handleAuth={handleAuth} 
+                />
+            );
+            if (screen === 'home') return (
+                <HomeView 
+                    products={products}
+                    categories={categories}
+                    activeCategory={activeCategory}
+                    setActiveCategory={setActiveCategory}
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    cartItems={cartItems}
+                    setScreen={setScreen}
+                    addToCart={addToCart}
+                    setProductForDetails={setProductForDetails}
+                />
+            );
+            if (screen === 'cart') return (
+                <CartView 
+                    cartItems={cartItems}
+                    setCartItems={setCartItems}
+                    cartTab={cartTab}
+                    setCartTab={setCartTab}
+                    orderHistory={orderHistory}
+                    placeOrder={placeOrder}
+                    calculateTotal={calculateTotal}
+                    setScreen={setScreen}
+                />
+            );
+            if (screen === 'product_details') return (
+                <ProductDetails 
+                    productForDetails={productForDetails}
+                    addToCart={addToCart}
+                    setScreen={setScreen}
+                />
+            );
+            if (screen === 'profile') return (
+                <ProfileView 
+                    currentUser={currentUser}
+                    setCurrentUser={setCurrentUser}
+                    setScreen={setScreen}
+                />
+            );
 
             return null;
         };
