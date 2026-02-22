@@ -1,9 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqladmin import Admin
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+import os
 
 from app.core.config import settings
 from app.db.session import engine
@@ -46,6 +48,9 @@ app = FastAPI(
     openapi_tags=tags_metadata,
 )
 
+# Template engine sozlamalari
+templates = Jinja2Templates(directory="app/templates")
+
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 app.add_middleware(
@@ -83,3 +88,8 @@ app.include_router(orders_dashboard.router, tags=["admin-custom"])
 @app.get("/")
 def read_root():
     return {"message": "Online shop API is running"}
+
+
+@app.get("/mobile")
+def mobile_frontend(request: Request):
+    return templates.TemplateResponse("mobile.html", {"request": request})

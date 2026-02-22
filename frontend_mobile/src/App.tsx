@@ -49,7 +49,7 @@ const PRODUCTS: Product[] = [
   { id: 13, name: 'Shim', price: '120 000 so\'m', priceNum: 120000, image: 'https://picsum.photos/seed/pants/300/200', category: 'Kiyim-kechak', description: 'Stylish and durable pants for any occasion.' },
 ];
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('splash');
@@ -536,8 +536,8 @@ export default function App() {
                 <button
                   onClick={() => setActiveCategory('Barchasi')}
                   className={`px-6 py-2 rounded-xl font-semibold whitespace-nowrap transition-all ${activeCategory === 'Barchasi'
-                      ? 'bg-[#00964b] text-white'
-                      : 'bg-[#f4f6f9] text-gray-600 hover:bg-gray-200'
+                    ? 'bg-[#00964b] text-white'
+                    : 'bg-[#f4f6f9] text-gray-600 hover:bg-gray-200'
                     }`}
                 >
                   Barchasi
@@ -547,8 +547,8 @@ export default function App() {
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
                     className={`px-6 py-2 rounded-xl font-semibold whitespace-nowrap transition-all ${activeCategory === cat.id
-                        ? 'bg-[#00964b] text-white'
-                        : 'bg-[#f4f6f9] text-gray-600 hover:bg-gray-200'
+                      ? 'bg-[#00964b] text-white'
+                      : 'bg-[#f4f6f9] text-gray-600 hover:bg-gray-200'
                       }`}
                   >
                     {cat.name}
