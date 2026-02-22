@@ -13,6 +13,13 @@ class CustomerCreate(CustomerBase):
     password: str
 
 
+class CustomerUpdate(BaseModel):
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+    default_address: Optional[str] = None
+    password: Optional[str] = None
+
+
 class CustomerLogin(BaseModel):
     phone: str
     password: str
