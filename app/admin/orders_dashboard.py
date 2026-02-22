@@ -8,7 +8,7 @@ import math
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-@router.get("/admin/custom/orders")
+@router.get("/dashboard/orders")
 def get_orders_dashboard(
     request: Request,
     page: int = Query(1, ge=1),
