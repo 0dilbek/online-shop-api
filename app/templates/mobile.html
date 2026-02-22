@@ -217,7 +217,11 @@
                         </div>
                     </div>
                     
-                    <button onClick={() => {setCurrentUser(null); setScreen('login');}} className="mt-10 flex items-center gap-2 text-red-500 font-bold">
+                    <button onClick={() => {
+                        setCurrentUser(null);
+                        localStorage.removeItem('tez_bozor_user');
+                        setScreen('login');
+                    }} className="mt-10 flex items-center gap-2 text-red-500 font-bold">
                         <Icon name="log-out" size={20} /> Tizimdan chiqish
                     </button>
                 </div>
@@ -237,22 +241,30 @@
             const [selectedOrder, setSelectedOrder] = useState(null);
             const [searchQuery, setSearchQuery] = useState('');
             const [productForDetails, setProductForDetails] = useState(null);
-            const [currentUser, setCurrentUser] = useState(null);
+            const [currentUser, setCurrentUser] = useState(() => {
+                const saved = localStorage.getItem('tez_bozor_user');
+                try {
+                    return saved ? JSON.parse(saved) : null;
+                } catch (e) { return null; }
+            });
             
             const [cartItems, setCartItems] = useState([]);
             const [orderHistory, setOrderHistory] = useState([]);
 
             const [formData, setFormData] = useState({
-                fullName: '',
-                phone: '',
+                fullName: currentUser?.full_name || '',
+                phone: currentUser?.phone || '',
                 password: '',
-                address: ''
+                address: currentUser?.default_address || ''
             });
 
             // Fetch initial data
             useEffect(() => {
                 fetchCategories();
                 fetchProducts();
+                if (currentUser) {
+                    fetchOrderHistory(currentUser.id);
+                }
             }, []);
 
             const fetchCategories = async () => {
@@ -300,10 +312,13 @@
 
             useEffect(() => {
                 if (screen === 'splash') {
-                    const timer = setTimeout(() => setScreen('register'), 2500);
+                    const timer = setTimeout(() => {
+                        if (currentUser) setScreen('home');
+                        else setScreen('register');
+                    }, 2500);
                     return () => clearTimeout(timer);
                 }
-            }, [screen]);
+            }, [screen, currentUser]);
 
             const handleAuth = async () => {
                 try {
@@ -322,6 +337,7 @@
                         const data = await response.json();
                         const user = screen === 'login' ? data.customer : data;
                         setCurrentUser(user);
+                        localStorage.setItem('tez_bozor_user', JSON.stringify(user));
                         setFormData({
                             fullName: user.full_name,
                             phone: user.phone,
