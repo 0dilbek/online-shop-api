@@ -20,4 +20,11 @@ class Customer(models.Model):
         self.hashed_password = make_password(raw)
 
     def verify_password(self, raw: str) -> bool:
+        # passlib format: $pbkdf2-sha256$...
+        if self.hashed_password.startswith('$pbkdf2-sha256$'):
+            try:
+                from passlib.hash import pbkdf2_sha256
+                return pbkdf2_sha256.verify(raw, self.hashed_password)
+            except Exception:
+                return False
         return check_password(raw, self.hashed_password)

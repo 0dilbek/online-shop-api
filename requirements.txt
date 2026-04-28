@@ -3,3 +3,4 @@ djangorestframework>=3.17
 django-cors-headers>=4.9
 pillow>=12.0
 faker>=38.0
+passlib>=1.7
