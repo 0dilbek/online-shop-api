@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin{% endblock %} — Tez Bozor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#00964b', dark: '#008542', light: '#e8f5ef' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    [x-cloak] { display: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-[#f8f9fa] font-sans antialiased">
+<div class="flex h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-60 bg-[#1e252b] flex flex-col flex-shrink-0">
+
+    <!-- Logo -->
+    <div class="px-5 py-6 border-b border-white/10">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-brand rounded-xl flex items-center justify-center shadow-lg">
+          <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-white font-black text-base leading-tight">Tez Bozor</p>
+          <p class="text-white/40 text-[11px] font-medium">Admin Panel</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="p-3 flex-grow space-y-0.5 overflow-y-auto no-scrollbar">
+
+      {% url 'panel:dashboard' as url_dashboard %}
+      {% url 'panel:order-list' as url_orders %}
+      {% url 'panel:product-list' as url_products %}
+      {% url 'panel:category-list' as url_categories %}
+      {% url 'panel:customer-list' as url_customers %}
+
+      <a href="{{ url_dashboard }}"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-semibold
+                {% if request.path == url_dashboard %}bg-brand text-white{% else %}text-white/60 hover:bg-white/8 hover:text-white{% endif %}">
+        <svg class="w-4.5 h-4.5 w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+        </svg>
+        Dashboard
+      </a>
+
+      <a href="{{ url_orders }}"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-semibold
+                {% if request.path|slice:':8' == '/panel/o' and 'order' in request.path %}bg-brand text-white{% else %}text-white/60 hover:bg-white/8 hover:text-white{% endif %}">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Buyurtmalar
+        {% if new_orders_count %}
+          <span class="ml-auto bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{{ new_orders_count }}</span>
+        {% endif %}
+      </a>
+
+      <a href="{{ url_products }}"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-semibold
+                {% if 'product' in request.path %}bg-brand text-white{% else %}text-white/60 hover:bg-white/8 hover:text-white{% endif %}">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+        Mahsulotlar
+      </a>
+
+      <a href="{{ url_categories }}"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-semibold
+                {% if 'categor' in request.path %}bg-brand text-white{% else %}text-white/60 hover:bg-white/8 hover:text-white{% endif %}">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+        </svg>
+        Kategoriyalar
+      </a>
+
+      <a href="{{ url_customers }}"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-semibold
+                {% if 'customer' in request.path %}bg-brand text-white{% else %}text-white/60 hover:bg-white/8 hover:text-white{% endif %}">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        Mijozlar
+      </a>
+    </nav>
+
+    <!-- User -->
+    <div class="p-3 border-t border-white/10">
+      <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/5">
+        <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center flex-shrink-0">
+          <span class="text-white font-black text-sm">{{ request.user.username|first|upper }}</span>
+        </div>
+        <div class="flex-grow min-w-0">
+          <p class="text-white font-semibold text-sm truncate leading-tight">{{ request.user.username }}</p>
+          <p class="text-white/40 text-[11px]">Superadmin</p>
+        </div>
+        <form method="post" action="{% url 'panel:logout' %}">
+          {% csrf_token %}
+          <button type="submit" title="Chiqish"
+                  class="text-white/30 hover:text-red-400 transition-colors p-1">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="flex-grow flex flex-col overflow-hidden">
+
+    <!-- Topbar -->
+    <header class="bg-white border-b border-gray-100 px-7 py-4 flex items-center justify-between flex-shrink-0">
+      <div>
+        <h1 class="text-[17px] font-black text-[#1e252b] leading-tight">{% block page_title %}Dashboard{% endblock %}</h1>
+        <p class="text-xs text-gray-400 font-medium mt-0.5">{% block page_subtitle %}{% endblock %}</p>
+      </div>
+      <div class="flex items-center gap-3">
+        {% block header_actions %}{% endblock %}
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-grow overflow-y-auto p-7">
+
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="mb-5 px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2
+                      {% if msg.tags == 'success' %}bg-green-50 text-green-700 border border-green-200
+                      {% elif msg.tags == 'error' %}bg-red-50 text-red-700 border border-red-200
+                      {% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+            {% if msg.tags == 'success' %}
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+              </svg>
+            {% endif %}
+            {{ msg }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+  <div class="relative bg-white rounded-2xl p-7 max-w-sm w-full shadow-2xl">
+    <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <svg class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+      </svg>
+    </div>
+    <h3 class="text-lg font-black text-[#1e252b] text-center mb-2">O'chirishni tasdiqlang</h3>
+    <p class="text-gray-400 text-sm text-center mb-6">Bu amalni ortga qaytarib bo'lmaydi.</p>
+    <div class="flex gap-3">
+      <button onclick="closeDeleteModal()"
+              class="flex-1 py-3 bg-[#f4f6f9] text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-colors">
+        Bekor
+      </button>
+      <form id="deleteForm" method="post">
+        {% csrf_token %}
+        <button type="submit"
+                class="flex-1 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors px-6">
+          O'chirish
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function confirmDelete(url) {
+    document.getElementById('deleteForm').action = url;
+    document.getElementById('deleteModal').classList.remove('hidden');
+  }
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+  }
+</script>
+</body>
+</html>

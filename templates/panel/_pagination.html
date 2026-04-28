@@ -1,0 +1,25 @@
+{% if is_paginated %}
+<div class="flex items-center justify-between mt-5">
+  <p class="text-sm text-gray-400 font-medium">
+    Jami <span class="font-black text-[#1e252b]">{{ paginator.count }}</span> ta
+  </p>
+  <div class="flex items-center gap-1">
+    {% if page_obj.has_previous %}
+      <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}"
+         class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-gray-100 text-gray-500 hover:border-[#00964b] hover:text-[#00964b] transition-colors text-sm font-bold">‹</a>
+    {% endif %}
+    {% for num in paginator.page_range %}
+      {% if page_obj.number == num %}
+        <span class="w-9 h-9 flex items-center justify-center rounded-xl bg-[#00964b] text-white text-sm font-black">{{ num }}</span>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ num }}"
+           class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-gray-100 text-gray-500 hover:border-[#00964b] hover:text-[#00964b] transition-colors text-sm font-bold">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}"
+         class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-gray-100 text-gray-500 hover:border-[#00964b] hover:text-[#00964b] transition-colors text-sm font-bold">›</a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}

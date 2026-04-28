@@ -1,0 +1,146 @@
+{% extends 'panel/base.html' %}
+{% block title %}Buyurtma #{{ order.id }}{% endblock %}
+{% block page_title %}Buyurtma #{{ order.id }}{% endblock %}
+{% block page_subtitle %}{{ order.created_at|date:"d.m.Y H:i" }}{% endblock %}
+
+{% block header_actions %}
+  <a href="{% url 'panel:order-list' %}"
+     class="bg-[#f4f6f9] hover:bg-gray-200 text-gray-600 text-sm font-bold px-4 py-2.5 rounded-xl transition-colors">
+    ← Orqaga
+  </a>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+  <!-- Left: info + items -->
+  <div class="lg:col-span-2 space-y-5">
+
+    <!-- Customer info -->
+    <div class="bg-white rounded-2xl border border-gray-100 p-6">
+      <h2 class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-5">Mijoz ma'lumotlari</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="bg-[#f4f6f9] rounded-xl p-4">
+          <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Ism</p>
+          <p class="font-bold text-[#1e252b]">{{ order.customer_name }}</p>
+        </div>
+        <div class="bg-[#f4f6f9] rounded-xl p-4">
+          <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Telefon</p>
+          <p class="font-bold text-[#1e252b]">{{ order.customer_phone }}</p>
+        </div>
+        <div class="bg-[#f4f6f9] rounded-xl p-4">
+          <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Manzil</p>
+          <p class="font-bold text-[#1e252b] text-sm">{{ order.address }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order items -->
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-100">
+        <h2 class="font-black text-[#1e252b]">Mahsulotlar ({{ order.items.count }} ta)</h2>
+      </div>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-gray-50 border-b border-gray-100">
+            <th class="px-5 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Mahsulot</th>
+            <th class="px-5 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Narx</th>
+            <th class="px-5 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Miqdor</th>
+            <th class="px-5 py-3 text-right text-[10px] font-black text-gray-400 uppercase tracking-wider">Jami</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          {% for item in order.items.all %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-5 py-3.5">
+              <div class="flex items-center gap-3">
+                {% if item.image %}
+                  <img src="{{ item.image }}" alt="{{ item.product_name }}"
+                       class="w-9 h-9 rounded-xl object-cover bg-gray-100 flex-shrink-0">
+                {% else %}
+                  <div class="w-9 h-9 rounded-xl bg-[#f4f6f9] flex-shrink-0"></div>
+                {% endif %}
+                <span class="font-semibold text-[#1e252b]">{{ item.product_name }}</span>
+              </div>
+            </td>
+            <td class="px-5 py-3.5 text-gray-500 font-medium whitespace-nowrap">
+              {{ item.unit_price|floatformat:0 }} so'm
+            </td>
+            <td class="px-5 py-3.5">
+              <span class="font-black text-[#1e252b]">× {{ item.quantity }}</span>
+            </td>
+            <td class="px-5 py-3.5 text-right font-black text-[#1e252b] whitespace-nowrap">
+              {{ item.total_price|floatformat:0 }} so'm
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr class="border-t-2 border-gray-100 bg-gray-50">
+            <td colspan="3" class="px-5 py-4 text-right font-black text-[#1e252b]">Jami:</td>
+            <td class="px-5 py-4 text-right font-black text-[#00964b] text-base whitespace-nowrap">
+              {{ order.total_price|floatformat:0 }} so'm
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Right: status + summary -->
+  <div class="space-y-5">
+
+    <!-- Status change -->
+    <div class="bg-white rounded-2xl border border-gray-100 p-6">
+      <h2 class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">Buyurtma holati</h2>
+      <div class="mb-4">
+        {% include 'panel/_status_badge.html' with status=order.status %}
+      </div>
+      <form method="post" action="{% url 'panel:order-status' order.pk %}">
+        {% csrf_token %}
+        <select name="status"
+                class="w-full bg-[#f4f6f9] rounded-xl px-4 py-3 text-[#1e252b] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#00964b] border-0 mb-3">
+          {% for val, label in status_choices %}
+            <option value="{{ val }}" {% if order.status == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit"
+                class="w-full bg-[#00964b] hover:bg-[#008542] text-white font-bold py-3 rounded-xl transition-colors text-sm">
+          Statusni yangilash
+        </button>
+      </form>
+    </div>
+
+    <!-- Order summary -->
+    <div class="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
+      <h2 class="text-[11px] font-black text-gray-400 uppercase tracking-widest">Qisqa ma'lumot</h2>
+      <div class="space-y-3 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-400 font-medium">ID</span>
+          <span class="font-black text-[#1e252b]">#{{ order.id }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 font-medium">Yaratilgan</span>
+          <span class="font-bold text-[#1e252b]">{{ order.created_at|date:"d.m.Y" }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 font-medium">Yangilangan</span>
+          <span class="font-bold text-[#1e252b]">{{ order.updated_at|date:"d.m.Y" }}</span>
+        </div>
+        {% if order.customer %}
+        <div class="flex justify-between">
+          <span class="text-gray-400 font-medium">Mijoz ID</span>
+          <a href="{% url 'panel:customer-detail' order.customer.pk %}"
+             class="font-bold text-[#00964b] hover:underline">#{{ order.customer.pk }}</a>
+        </div>
+        {% endif %}
+        <div class="border-t border-gray-100 pt-3 flex justify-between">
+          <span class="text-gray-400 font-bold">Jami summa</span>
+          <span class="font-black text-[#00964b]">{{ order.total_price|floatformat:0 }} so'm</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

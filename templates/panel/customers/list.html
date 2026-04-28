@@ -1,0 +1,70 @@
+{% extends 'panel/base.html' %}
+{% block title %}Mijozlar{% endblock %}
+{% block page_title %}Mijozlar{% endblock %}
+{% block page_subtitle %}{{ paginator.count }} ta mijoz{% endblock %}
+
+{% block content %}
+
+<form method="get" class="flex gap-3 mb-5">
+  <input type="text" name="q" value="{{ q }}" placeholder="Ism yoki telefon..."
+         class="bg-white border border-gray-100 rounded-xl px-4 py-2.5 text-sm text-[#1e252b] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00964b] min-w-[240px]">
+  <button type="submit" class="bg-[#1e252b] text-white text-sm font-bold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity">
+    Qidirish
+  </button>
+  {% if q %}
+  <a href="{% url 'panel:customer-list' %}" class="bg-[#f4f6f9] text-gray-500 text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-gray-200 transition-colors">
+    Tozalash ✕
+  </a>
+  {% endif %}
+</form>
+
+<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="bg-gray-50 border-b border-gray-100">
+        <th class="px-5 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider w-12">#</th>
+        <th class="px-5 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Ism</th>
+        <th class="px-5 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Telefon</th>
+        <th class="px-5 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Manzil</th>
+        <th class="px-5 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Ro'yxatdan</th>
+        <th class="px-5 py-3 text-right text-[10px] font-black text-gray-400 uppercase tracking-wider">Amal</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-50">
+      {% for customer in customers %}
+      <tr class="hover:bg-gray-50 transition-colors">
+        <td class="px-5 py-3.5 text-gray-400 font-bold text-xs">{{ customer.id }}</td>
+        <td class="px-5 py-3.5">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-[#e8f5ef] rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="text-[#00964b] font-black text-xs">{{ customer.full_name|first|upper }}</span>
+            </div>
+            <span class="font-semibold text-[#1e252b]">{{ customer.full_name }}</span>
+          </div>
+        </td>
+        <td class="px-5 py-3.5 text-gray-500 font-medium">{{ customer.phone }}</td>
+        <td class="px-5 py-3.5 text-gray-400 text-xs max-w-[160px] truncate">
+          {{ customer.default_address|default:"—" }}
+        </td>
+        <td class="px-5 py-3.5 text-gray-400 text-xs font-medium whitespace-nowrap">
+          {{ customer.created_at|date:"d.m.Y" }}
+        </td>
+        <td class="px-5 py-3.5 text-right">
+          <a href="{% url 'panel:customer-detail' customer.pk %}"
+             class="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-[#f4f6f9] hover:bg-[#e8f5ef] hover:text-[#00964b] text-gray-500 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="px-6 py-12 text-center text-gray-400">Mijozlar topilmadi</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% include 'panel/_pagination.html' %}
+{% endblock %}

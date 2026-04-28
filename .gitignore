@@ -11,6 +11,11 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+myenv/
+
+# Django
+staticfiles/
+media/
 
 # IDEs
 .idea/

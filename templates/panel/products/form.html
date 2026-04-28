@@ -1,0 +1,93 @@
+{% extends 'panel/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}Mahsulotlar{% endblock %}
+
+{% block header_actions %}
+  <a href="{% url 'panel:product-list' %}"
+     class="bg-[#f4f6f9] hover:bg-gray-200 text-gray-600 text-sm font-bold px-4 py-2.5 rounded-xl transition-colors">
+    ← Orqaga
+  </a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+  <div class="bg-white rounded-2xl border border-gray-100 p-7">
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        {% for field in form %}
+          {% if field.name == 'is_top' %}
+          <div class="sm:col-span-2 flex items-center gap-3 bg-[#f4f6f9] p-4 rounded-xl">
+            {{ field }}
+            <label for="{{ field.id_for_label }}" class="text-sm font-bold text-[#1e252b] cursor-pointer select-none">
+              Top mahsulot sifatida belgilash
+            </label>
+          </div>
+          {% elif field.name == 'description' or field.name == 'image_path' %}
+          <div class="sm:col-span-2">
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+              {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+              <p class="mt-1.5 text-xs text-red-500 font-semibold">{{ field.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+          {% else %}
+          <div>
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+              {{ field.label }}{% if field.field.required %} *{% endif %}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+              <p class="mt-1.5 text-xs text-red-500 font-semibold">{{ field.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Image preview -->
+      <div id="imgPreviewBox" class="hidden">
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Rasm ko'rinishi</p>
+        <img id="imgPreview" src="" alt="preview"
+             class="w-32 h-32 object-cover rounded-2xl border border-gray-100">
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button type="submit"
+                class="flex-1 bg-[#00964b] hover:bg-[#008542] text-white font-bold py-3.5 rounded-xl transition-colors">
+          Saqlash
+        </button>
+        <a href="{% url 'panel:product-list' %}"
+           class="flex-1 text-center bg-[#f4f6f9] hover:bg-gray-200 text-gray-600 font-bold py-3.5 rounded-xl transition-colors">
+          Bekor
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const urlInput = document.getElementById('id_image_path');
+  const previewBox = document.getElementById('imgPreviewBox');
+  const previewImg = document.getElementById('imgPreview');
+
+  function updatePreview() {
+    const val = urlInput.value.trim();
+    if (val.startsWith('http')) {
+      previewImg.src = val;
+      previewBox.classList.remove('hidden');
+    } else {
+      previewBox.classList.add('hidden');
+    }
+  }
+
+  if (urlInput) {
+    urlInput.addEventListener('input', updatePreview);
+    updatePreview();
+  }
+</script>
+{% endblock %}

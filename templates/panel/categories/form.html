@@ -1,0 +1,43 @@
+{% extends 'panel/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}Kategoriyalar{% endblock %}
+
+{% block header_actions %}
+  <a href="{% url 'panel:category-list' %}"
+     class="flex items-center gap-2 bg-[#f4f6f9] hover:bg-gray-200 text-gray-600 text-sm font-bold px-4 py-2.5 rounded-xl transition-colors">
+    ← Orqaga
+  </a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-lg">
+  <div class="bg-white rounded-2xl border border-gray-100 p-7">
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
+      {% for field in form %}
+      <div>
+        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+          {{ field.label }}{% if field.field.required %} *{% endif %}
+        </label>
+        {{ field }}
+        {% if field.errors %}
+          <p class="mt-1.5 text-xs text-red-500 font-semibold">{{ field.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <div class="flex gap-3 pt-2">
+        <button type="submit"
+                class="flex-1 bg-[#00964b] hover:bg-[#008542] text-white font-bold py-3.5 rounded-xl transition-colors">
+          Saqlash
+        </button>
+        <a href="{% url 'panel:category-list' %}"
+           class="flex-1 text-center bg-[#f4f6f9] hover:bg-gray-200 text-gray-600 font-bold py-3.5 rounded-xl transition-colors">
+          Bekor
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

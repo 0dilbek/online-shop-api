@@ -1,0 +1,13 @@
+{% if status == 'new' %}
+  <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-black bg-orange-50 text-orange-600">Yangi</span>
+{% elif status == 'confirmed' %}
+  <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-black bg-blue-50 text-blue-600">Tasdiqlangan</span>
+{% elif status == 'delivering' %}
+  <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-black bg-purple-50 text-purple-600">Yetkazilmoqda</span>
+{% elif status == 'completed' %}
+  <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-black bg-[#e8f5ef] text-[#00964b]">Yakunlangan</span>
+{% elif status == 'canceled' %}
+  <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-black bg-red-50 text-red-500">Bekor</span>
+{% else %}
+  <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-black bg-gray-100 text-gray-500">{{ status }}</span>
+{% endif %}
