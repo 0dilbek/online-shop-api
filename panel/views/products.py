@@ -49,14 +49,23 @@ class ProductCreateView(StaffRequiredMixin, CreateView):
         
         if image_file:
             import os
+            import uuid
             from django.core.files.storage import FileSystemStorage
             from django.conf import settings
             
-            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'products'))
-            filename = fs.save(image_file.name, image_file)
-            # Save full URL in the database
-            file_url = f"{settings.BASE_URL}{settings.MEDIA_URL}products/{filename}"
-            instance.image_path = file_url
+            # Use static/images as storage location
+            storage_path = os.path.join(settings.BASE_DIR, 'static', 'images')
+            os.makedirs(storage_path, exist_ok=True)
+            
+            fs = FileSystemStorage(location=storage_path)
+            
+            # Generate unique filename using UUID
+            ext = os.path.splitext(image_file.name)[1]
+            unique_name = f"{uuid.uuid4()}{ext}"
+            
+            filename = fs.save(unique_name, image_file)
+            # Save relative path in the database (consistent with existing data)
+            instance.image_path = f"images/{filename}"
             
         instance.save()
         messages.success(self.request, "Mahsulot muvaffaqiyatli qo'shildi.")
@@ -80,14 +89,20 @@ class ProductUpdateView(StaffRequiredMixin, UpdateView):
         
         if image_file:
             import os
+            import uuid
             from django.core.files.storage import FileSystemStorage
             from django.conf import settings
             
-            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'products'))
-            filename = fs.save(image_file.name, image_file)
-            # Save full URL in the database
-            file_url = f"{settings.BASE_URL}{settings.MEDIA_URL}products/{filename}"
-            instance.image_path = file_url
+            storage_path = os.path.join(settings.BASE_DIR, 'static', 'images')
+            os.makedirs(storage_path, exist_ok=True)
+            
+            fs = FileSystemStorage(location=storage_path)
+            
+            ext = os.path.splitext(image_file.name)[1]
+            unique_name = f"{uuid.uuid4()}{ext}"
+            
+            filename = fs.save(unique_name, image_file)
+            instance.image_path = f"images/{filename}"
             
         instance.save()
         messages.success(self.request, "Mahsulot yangilandi.")
