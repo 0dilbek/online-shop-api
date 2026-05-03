@@ -55,7 +55,8 @@ class ProductCreateView(StaffRequiredMixin, CreateView):
             
             # Use static/images as storage location
             storage_path = os.path.join(settings.BASE_DIR, 'static', 'images')
-            os.makedirs(storage_path, exist_ok=True)
+            if not os.path.exists(storage_path):
+                os.makedirs(storage_path, exist_ok=True)
             
             fs = FileSystemStorage(location=storage_path)
             
@@ -64,7 +65,7 @@ class ProductCreateView(StaffRequiredMixin, CreateView):
             unique_name = f"{uuid.uuid4()}{ext}"
             
             filename = fs.save(unique_name, image_file)
-            # Save relative path in the database (consistent with existing data)
+            # Save relative path in the database
             instance.image_path = f"images/{filename}"
             
         instance.save()
@@ -94,7 +95,8 @@ class ProductUpdateView(StaffRequiredMixin, UpdateView):
             from django.conf import settings
             
             storage_path = os.path.join(settings.BASE_DIR, 'static', 'images')
-            os.makedirs(storage_path, exist_ok=True)
+            if not os.path.exists(storage_path):
+                os.makedirs(storage_path, exist_ok=True)
             
             fs = FileSystemStorage(location=storage_path)
             
