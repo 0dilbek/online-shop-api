@@ -21,6 +21,12 @@ class CategoryForm(forms.ModelForm):
 
 
 class ProductForm(forms.ModelForm):
+    image_file = forms.ImageField(
+        required=False,
+        label="Rasm yuklash",
+        widget=forms.FileInput(attrs={'class': _input, 'accept': 'image/*'})
+    )
+
     class Meta:
         model = Product
         fields = ['name', 'price', 'description', 'category', 'status', 'is_top', 'image_path']
@@ -34,5 +40,5 @@ class ProductForm(forms.ModelForm):
                 attrs={'class': _select},
             ),
             'is_top': forms.CheckboxInput(attrs={'class': 'w-5 h-5 rounded accent-[#00964b]'}),
-            'image_path': forms.URLInput(attrs={'class': _input, 'placeholder': 'https://...'}),
+            'image_path': forms.URLInput(attrs={'class': _input, 'placeholder': 'Yoki rasm URL manzilini kiriting (ixtiyoriy)'}),
         }

@@ -13,7 +13,7 @@
 {% block content %}
 <div class="max-w-2xl">
   <div class="bg-white rounded-2xl border border-gray-100 p-7">
-    <form method="post" class="space-y-5">
+    <form method="post" enctype="multipart/form-data" class="space-y-5">
       {% csrf_token %}
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">

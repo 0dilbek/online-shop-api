@@ -44,8 +44,23 @@ class ProductCreateView(StaffRequiredMixin, CreateView):
     success_url = reverse_lazy('panel:product-list')
 
     def form_valid(self, form):
+        instance = form.save(commit=False)
+        image_file = form.cleaned_data.get('image_file')
+        
+        if image_file:
+            import os
+            from django.core.files.storage import FileSystemStorage
+            from django.conf import settings
+            
+            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'products'))
+            filename = fs.save(image_file.name, image_file)
+            # Save full URL in the database
+            file_url = f"{settings.BASE_URL}{settings.MEDIA_URL}products/{filename}"
+            instance.image_path = file_url
+            
+        instance.save()
         messages.success(self.request, "Mahsulot muvaffaqiyatli qo'shildi.")
-        return super().form_valid(form)
+        return redirect(self.success_url)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -60,8 +75,23 @@ class ProductUpdateView(StaffRequiredMixin, UpdateView):
     success_url = reverse_lazy('panel:product-list')
 
     def form_valid(self, form):
+        instance = form.save(commit=False)
+        image_file = form.cleaned_data.get('image_file')
+        
+        if image_file:
+            import os
+            from django.core.files.storage import FileSystemStorage
+            from django.conf import settings
+            
+            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'products'))
+            filename = fs.save(image_file.name, image_file)
+            # Save full URL in the database
+            file_url = f"{settings.BASE_URL}{settings.MEDIA_URL}products/{filename}"
+            instance.image_path = file_url
+            
+        instance.save()
         messages.success(self.request, "Mahsulot yangilandi.")
-        return super().form_valid(form)
+        return redirect(self.success_url)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
