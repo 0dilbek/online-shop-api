@@ -186,8 +186,22 @@ export default function App() {
         setScreen('home');
         fetchOrderHistory(user.id);
       } else {
-        const error = await response.json();
-        alert(error.detail || 'Avtorizatsiyada xatolik');
+        const errorData = await response.json();
+        let errorMessage = 'Avtorizatsiyada xatolik';
+        
+        if (errorData.detail) {
+          errorMessage = Array.isArray(errorData.detail) 
+            ? errorData.detail[0] 
+            : errorData.detail;
+        } else if (typeof errorData === 'object') {
+          // Handle field errors like {"phone": ["..."]}
+          const firstKey = Object.keys(errorData)[0];
+          if (firstKey && Array.isArray(errorData[firstKey])) {
+            errorMessage = errorData[firstKey][0];
+          }
+        }
+        
+        alert(errorMessage);
       }
     } catch (error) {
       console.error('Auth error:', error);

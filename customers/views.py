@@ -33,10 +33,10 @@ class CustomerLoginView(APIView):
         try:
             customer = Customer.objects.get(phone=phone)
         except Customer.DoesNotExist:
-            raise ValidationError("Phone or password incorrect")
+            return Response({'detail': 'Telefon raqam yoki parol noto\'g\'ri'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not customer.verify_password(password):
-            raise ValidationError("Phone or password incorrect")
+            return Response({'detail': 'Telefon raqam yoki parol noto\'g\'ri'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({
             'status': 'success',
