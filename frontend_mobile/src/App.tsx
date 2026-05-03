@@ -618,7 +618,7 @@ export default function App() {
                       <h3 className="text-xl font-bold text-gray-900">Top Mahsulotlar</h3>
                     </div>
                     <div className="px-6 overflow-x-auto flex gap-4 no-scrollbar pb-2">
-                      {products.filter(p => (p as any).is_top).map((product) => (
+                      {products.filter(p => (p as any).is_top).slice(0, 10).map((product) => (
                         <div
                           key={`top-${product.id}`}
                           onClick={() => {
@@ -647,41 +647,46 @@ export default function App() {
                   </div>
 
                   {/* Sections by Category */}
-                  {categories.map((cat) => (
-                    <div key={cat.id} className="mb-8">
-                      <div className="px-6 flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-bold text-gray-900">{cat.name}</h3>
-                        <button onClick={() => setActiveCategory(cat.id)} className="text-[#00964b] font-semibold text-sm">Barchasi</button>
-                      </div>
-                      <div className="px-6 overflow-x-auto flex gap-4 no-scrollbar pb-2">
-                        {products.filter(p => (p as any).category_id === cat.id).map((product) => (
-                          <div
-                            key={`${cat.id}-${product.id}`}
-                            onClick={() => {
-                              setProductForDetails(product);
-                              setScreen('product_details');
-                            }}
-                            className="min-w-[180px] bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden cursor-pointer"
-                          >
-                            <img src={product.image} alt={product.name} className="w-full h-32 object-cover" />
-                            <div className="p-4">
-                              <h4 className="font-semibold text-gray-800 mb-1 text-sm truncate">{product.name}</h4>
-                              <p className="text-[#00964b] font-bold text-xs mb-3">{product.price}</p>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  addToCart(product);
-                                }}
-                                className="w-full bg-[#00964b] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#008542] transition-colors"
-                              >
-                                + Savatga
-                              </button>
+                  {categories.map((cat) => {
+                    const categoryProducts = products.filter(p => (p as any).category?.id === cat.id);
+                    if (categoryProducts.length === 0) return null;
+
+                    return (
+                      <div key={cat.id} className="mb-8">
+                        <div className="px-6 flex items-center justify-between mb-4">
+                          <h3 className="text-xl font-bold text-gray-900">{cat.name}</h3>
+                          <button onClick={() => setActiveCategory(cat.id)} className="text-[#00964b] font-semibold text-sm">Barchasi</button>
+                        </div>
+                        <div className="px-6 overflow-x-auto flex gap-4 no-scrollbar pb-2">
+                          {categoryProducts.slice(0, 3).map((product) => (
+                            <div
+                              key={`${cat.id}-${product.id}`}
+                              onClick={() => {
+                                setProductForDetails(product);
+                                setScreen('product_details');
+                              }}
+                              className="min-w-[180px] bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden cursor-pointer"
+                            >
+                              <img src={product.image} alt={product.name} className="w-full h-32 object-cover" />
+                              <div className="p-4">
+                                <h4 className="font-semibold text-gray-800 mb-1 text-sm truncate">{product.name}</h4>
+                                <p className="text-[#00964b] font-bold text-xs mb-3">{product.price}</p>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    addToCart(product);
+                                  }}
+                                  className="w-full bg-[#00964b] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#008542] transition-colors"
+                                >
+                                  + Savatga
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </>
               ) : (
                 <div className="px-6">
