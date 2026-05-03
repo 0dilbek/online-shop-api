@@ -87,7 +87,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')
+BASE_URL = os.environ.get('BASE_URL', 'https://tbozoz.uz')
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
