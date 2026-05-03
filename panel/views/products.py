@@ -65,6 +65,14 @@ class ProductCreateView(StaffRequiredMixin, CreateView):
             unique_name = f"{uuid.uuid4()}{ext}"
             
             filename = fs.save(unique_name, image_file)
+            
+            # Agar STATIC_ROOT mavjud bo'lsa (production), u yerga ham nusxalaymiz
+            if not settings.DEBUG and settings.STATIC_ROOT:
+                import shutil
+                target_dir = os.path.join(settings.STATIC_ROOT, 'images')
+                os.makedirs(target_dir, exist_ok=True)
+                shutil.copy2(os.path.join(storage_path, filename), os.path.join(target_dir, filename))
+                
             # Save relative path in the database
             instance.image_path = f"images/{filename}"
             
@@ -104,6 +112,13 @@ class ProductUpdateView(StaffRequiredMixin, UpdateView):
             unique_name = f"{uuid.uuid4()}{ext}"
             
             filename = fs.save(unique_name, image_file)
+            
+            if not settings.DEBUG and settings.STATIC_ROOT:
+                import shutil
+                target_dir = os.path.join(settings.STATIC_ROOT, 'images')
+                os.makedirs(target_dir, exist_ok=True)
+                shutil.copy2(os.path.join(storage_path, filename), os.path.join(target_dir, filename))
+                
             instance.image_path = f"images/{filename}"
             
         instance.save()
