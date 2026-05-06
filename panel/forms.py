@@ -14,7 +14,7 @@ class CategoryForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': _input, 'placeholder': 'Kategoriya nomi'}),
             'unit_type': forms.Select(
-                choices=[('piece', 'Dona (piece)'), ('weight', 'Vazn (weight)')],
+                choices=[('', 'Birlikni tanlang'), ('piece', 'Dona (piece)'), ('weight', 'Vazn (weight)')],
                 attrs={'class': _select},
             ),
         }
@@ -23,7 +23,7 @@ class CategoryForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     image_file = forms.ImageField(
         required=False,
-        label="Rasm yuklash",
+        label="Rasm yuklash (ixtiyoriy)",
         widget=forms.FileInput(attrs={'class': _input, 'accept': 'image/*'})
     )
 
@@ -42,3 +42,11 @@ class ProductForm(forms.ModelForm):
             'is_top': forms.CheckboxInput(attrs={'class': 'w-5 h-5 rounded accent-[#00964b]'}),
             'image_path': forms.URLInput(attrs={'class': _input, 'placeholder': 'Yoki rasm URL manzilini kiriting (ixtiyoriy)'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['description'].required = False
+        self.fields['image_path'].required = False
+        self.fields['image_file'].required = False
+        self.fields['description'].label = "Tavsif (ixtiyoriy)"
+        self.fields['image_path'].label = "Rasm URL (ixtiyoriy)"
