@@ -40,7 +40,7 @@ class ProductForm(forms.ModelForm):
                 attrs={'class': _select},
             ),
             'is_top': forms.CheckboxInput(attrs={'class': 'w-5 h-5 rounded accent-[#00964b]'}),
-            'image_path': forms.URLInput(attrs={'class': _input, 'placeholder': 'Yoki rasm URL manzilini kiriting (ixtiyoriy)'}),
+            'image_path': forms.TextInput(attrs={'class': _input, 'placeholder': 'Rasm yo\'li yoki URL (ixtiyoriy)'}),
         }
 
     def __init__(self, *args, **kwargs):
