@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound, ValidationError
@@ -50,9 +50,21 @@ class CustomerLogoutView(APIView):
         return Response({'status': 'success', 'message': 'Logout successful'})
 
 
-class CustomerDetailView(RetrieveAPIView):
+class CustomerDetailView(RetrieveUpdateAPIView):
     queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
+    http_method_names = ['get', 'patch']
+
+    def get_serializer_class(self):
+        if self.request.method == 'PATCH':
+            return CustomerUpdateSerializer
+        return CustomerSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        customer = serializer.save()
+        return Response(CustomerSerializer(customer).data)
 
 
 class CustomerByPhoneView(APIView):
