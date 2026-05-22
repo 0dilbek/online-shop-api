@@ -1,0 +1,24 @@
+[Unit]
+Description=Online Shop API (Gunicorn)
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/home/online-shop-api
+EnvironmentFile=/home/online-shop-api/.env
+ExecStart=/home/online-shop-api/myenv/bin/gunicorn \
+    --workers 3 \
+    --bind unix:/run/gunicorn.sock \
+    --timeout 120 \
+    --access-logfile /var/log/gunicorn/access.log \
+    --error-logfile /var/log/gunicorn/error.log \
+    config.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
