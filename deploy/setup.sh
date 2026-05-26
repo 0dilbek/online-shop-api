@@ -43,4 +43,4 @@ nginx -t && systemctl restart nginx
 
 echo ""
 echo "✓ Deploy tugadi!"
-echo "  Server: http://$(curl -s ifconfig.me)"
+echo "  Server: http://$(curl -4 -s ifconfig.me)"

@@ -1,7 +1,21 @@
+import re
 from django.db import models
 from django.conf import settings
 
 from categories.models import Category
+
+
+def normalize_for_search(text: str) -> str:
+    """Apostraf, qo'shtirnoq va boshqa maxsus belgilarni olib tashlaydi.
+    Harflar (lotin+kirill) va raqamlar qoladi, kichik harfga o'tkaziladi."""
+    if not text:
+        return ''
+    # apostraf va qo'shtirnoqlarni o'chirish: O'rik → Orik
+    text = re.sub(r"[''`\"'ʼ]", '', text)
+    # boshqa maxsus belgilarni bo'sh joy bilan almashtirish (harflar/raqam/bo'sh joy qoladi)
+    text = re.sub(r'[^\w\s]', ' ', text, flags=re.UNICODE)
+    # ko'p bo'sh joylarni bittaga
+    return re.sub(r'\s+', ' ', text).strip().lower()
 
 
 class Product(models.Model):
@@ -13,6 +27,8 @@ class Product(models.Model):
     ]
 
     name = models.CharField(max_length=200)
+    name_search = models.CharField(max_length=200, blank=True, db_index=True,
+                                   editable=False)
     price = models.IntegerField()  # so'm
     description = models.CharField(max_length=500, blank=True, null=True)
     image_path = models.CharField(max_length=300, blank=True, null=True)
@@ -26,6 +42,10 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.name_search = normalize_for_search(self.name)
+        super().save(*args, **kwargs)
 
     @property
     def image(self):

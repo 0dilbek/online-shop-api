@@ -1,6 +1,5 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.exceptions import NotFound
-from .models import Product
+from .models import Product, normalize_for_search
 from .serializers import ProductSerializer
 
 
@@ -18,7 +17,7 @@ class ProductListView(ListAPIView):
         if is_top is not None:
             qs = qs.filter(is_top=is_top.lower() == 'true')
         if search:
-            qs = qs.filter(name__icontains=search)
+            qs = qs.filter(name_search__icontains=normalize_for_search(search))
         return qs
 
 
