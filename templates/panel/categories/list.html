@@ -18,28 +18,59 @@
   <table class="w-full text-sm">
     <thead>
       <tr class="bg-gray-50 border-b border-gray-100">
-        <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider w-16">#</th>
+        <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider w-12">#</th>
         <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Nomi</th>
-        <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Turi</th>
+        <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Birlik</th>
         <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-wider">Mahsulotlar</th>
         <th class="px-6 py-3 text-right text-[10px] font-black text-gray-400 uppercase tracking-wider">Amal</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-gray-50">
-      {% for cat in categories %}
+      {% for cat, depth in tree_categories %}
       <tr class="hover:bg-gray-50 transition-colors">
-        <td class="px-6 py-4 text-gray-400 font-bold">{{ cat.id }}</td>
-        <td class="px-6 py-4 font-bold text-[#1e252b]">{{ cat.name }}</td>
-        <td class="px-6 py-4">
-          {% if cat.unit_type == 'piece' %}
-            <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-[11px] font-black rounded-lg">Dona</span>
-          {% else %}
-            <span class="px-2.5 py-1 bg-purple-50 text-purple-600 text-[11px] font-black rounded-lg">Vazn</span>
-          {% endif %}
+        <td class="px-6 py-3.5 text-gray-400 font-bold text-xs">{{ cat.id }}</td>
+
+        <td class="px-6 py-3.5">
+          <div class="flex items-center gap-2.5" style="padding-left: {{ depth }}rem">
+            {% if cat.image %}
+              <img src="{{ cat.image }}" alt="{{ cat.name }}"
+                   class="w-8 h-8 rounded-lg object-cover bg-gray-100 shrink-0">
+            {% elif depth == 0 %}
+              <div class="w-8 h-8 rounded-lg bg-[#e8f5ef] flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-[#00964b]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+                </svg>
+              </div>
+            {% else %}
+              <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            {% endif %}
+            <span class="font-bold text-[#1e252b]">{{ cat.name }}</span>
+          </div>
         </td>
-        <td class="px-6 py-4 font-bold text-[#1e252b]">{{ cat.product_count }}</td>
-        <td class="px-6 py-4 text-right">
-          <div class="flex items-center justify-end gap-2">
+
+        <td class="px-6 py-3.5 text-gray-500 text-xs">
+          {% if cat.unit_type == 'weight' %}Vazn{% else %}Dona{% endif %}
+        </td>
+
+        <td class="px-6 py-3.5 font-bold text-[#1e252b]">
+          {{ cat.product_count }}
+        </td>
+
+        <td class="px-6 py-3.5 text-right">
+          <div class="flex items-center justify-end gap-1.5">
+            {% if depth == 0 %}
+            <a href="{% url 'panel:category-create' %}?parent={{ cat.pk }}"
+               title="Ichki kategoriya qo'shish"
+               class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#f4f6f9] hover:bg-green-50 hover:text-[#00964b] text-gray-500 transition-colors">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+              </svg>
+            </a>
+            {% endif %}
             <a href="{% url 'panel:category-edit' cat.pk %}"
                class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#f4f6f9] hover:bg-[#e8f5ef] hover:text-[#00964b] text-gray-500 transition-colors">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

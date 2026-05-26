@@ -13,19 +13,47 @@
 {% block content %}
 <div class="max-w-lg">
   <div class="bg-white rounded-2xl border border-gray-100 p-7">
-    <form method="post" class="space-y-5">
+    <form method="post" enctype="multipart/form-data" class="space-y-5">
       {% csrf_token %}
-      {% for field in form %}
+
       <div>
-        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
-          {{ field.label }}{% if field.field.required %} *{% endif %}
-        </label>
-        {{ field }}
-        {% if field.errors %}
-          <p class="mt-1.5 text-xs text-red-500 font-semibold">{{ field.errors|join:", " }}</p>
-        {% endif %}
+        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nomi *</label>
+        {{ form.name }}
+        {% if form.name.errors %}<p class="mt-1.5 text-xs text-red-500 font-semibold">{{ form.name.errors|join:", " }}</p>{% endif %}
       </div>
-      {% endfor %}
+
+      <div>
+        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Yuqori kategoriya</label>
+        {{ form.parent }}
+        {% if form.parent.errors %}<p class="mt-1.5 text-xs text-red-500 font-semibold">{{ form.parent.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">O'lchov birligi</label>
+        {{ form.unit_type }}
+      </div>
+
+      {# Rasm #}
+      <div>
+        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Rasm</label>
+
+        {% if object.image %}
+        <div class="mb-3 flex items-center gap-3">
+          <img src="{{ object.image }}" alt="{{ object.name }}"
+               id="current-img"
+               class="w-16 h-16 rounded-xl object-cover bg-gray-100">
+          <span class="text-xs text-gray-400">Hozirgi rasm</span>
+        </div>
+        {% endif %}
+
+        <div id="preview-wrap" class="mb-3 hidden">
+          <img id="img-preview" src="" alt="preview"
+               class="w-16 h-16 rounded-xl object-cover bg-gray-100">
+        </div>
+
+        {{ form.image_file }}
+        <p class="mt-1.5 text-[11px] text-gray-400">Yangi rasm yuklash uchun tanlang</p>
+      </div>
 
       <div class="flex gap-3 pt-2">
         <button type="submit"
@@ -40,4 +68,24 @@
     </form>
   </div>
 </div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const parentParam = urlParams.get('parent');
+  if (parentParam) {
+    const parentSelect = document.getElementById('id_parent');
+    if (parentSelect) parentSelect.value = parentParam;
+  }
+
+  document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const wrap = document.getElementById('preview-wrap');
+    const img = document.getElementById('img-preview');
+    img.src = URL.createObjectURL(file);
+    wrap.classList.remove('hidden');
+    const current = document.getElementById('current-img');
+    if (current) current.classList.add('hidden');
+  });
+</script>
 {% endblock %}

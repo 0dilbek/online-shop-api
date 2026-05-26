@@ -29,12 +29,16 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     name_search = models.CharField(max_length=200, blank=True, db_index=True,
                                    editable=False)
-    price = models.IntegerField()  # so'm
+    price = models.IntegerField()
     description = models.CharField(max_length=500, blank=True, null=True)
     image_path = models.CharField(max_length=300, blank=True, null=True)
     is_top = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='products')
+    parent = models.ForeignKey(
+        'self', null=True, blank=True,
+        on_delete=models.CASCADE, related_name='variants'
+    )
 
     class Meta:
         verbose_name = 'Mahsulot'

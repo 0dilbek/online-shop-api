@@ -1,13 +1,17 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from .models import Product, normalize_for_search
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, ProductDetailSerializer
 
 
 class ProductListView(ListAPIView):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
-        qs = Product.objects.select_related('category').order_by('id')
+        # Faqat asosiy mahsulotlar (variantlar listing da ko'rinmaydi)
+        qs = Product.objects.select_related('category').filter(
+            parent__isnull=True
+        ).order_by('id')
+
         category_id = self.request.query_params.get('category_id')
         is_top = self.request.query_params.get('is_top')
         search = self.request.query_params.get('search')
@@ -22,5 +26,5 @@ class ProductListView(ListAPIView):
 
 
 class ProductDetailView(RetrieveAPIView):
-    queryset = Product.objects.select_related('category').all()
-    serializer_class = ProductSerializer
+    queryset = Product.objects.select_related('category').prefetch_related('variants')
+    serializer_class = ProductDetailSerializer
