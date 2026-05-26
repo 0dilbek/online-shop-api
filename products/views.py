@@ -7,7 +7,7 @@ class ProductListView(ListAPIView):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
-        qs = Product.objects.select_related('category').all()
+        qs = Product.objects.select_related('category').order_by('id')
         category_id = self.request.query_params.get('category_id')
         is_top = self.request.query_params.get('is_top')
         search = self.request.query_params.get('search')
