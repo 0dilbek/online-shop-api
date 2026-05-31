@@ -83,7 +83,7 @@
 <script>
   const textArea = document.getElementById('id_text');
   if (textArea) {
-    new EasyMDE({
+    const easyMDE = new EasyMDE({
       element: textArea,
       spellChecker: false,
       status: false,
@@ -91,6 +91,12 @@
         enabled: false
       }
     });
+    const form = textArea.closest('form');
+    if (form) {
+      form.addEventListener('submit', function() {
+        textArea.value = easyMDE.value();
+      });
+    }
   }
 
   const fileInput = document.querySelector('input[type="file"]');

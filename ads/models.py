@@ -23,4 +23,6 @@ class Advertisement(models.Model):
             return None
         if self.image_path.startswith('http'):
             return self.image_path
+        if self.image_path.startswith(settings.MEDIA_URL.lstrip('/')):
+            return f"{settings.BASE_URL}/{self.image_path}"
         return f"{settings.BASE_URL}/static/{self.image_path}"

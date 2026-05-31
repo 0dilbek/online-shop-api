@@ -1,5 +1,4 @@
 import os
-import shutil
 import uuid
 
 from django.conf import settings
@@ -15,16 +14,12 @@ from panel.mixins import StaffRequiredMixin
 
 
 def _save_image(image_file):
-    storage_path = os.path.join(settings.BASE_DIR, 'static', 'images')
+    storage_path = os.path.join(settings.MEDIA_ROOT, 'ads')
     os.makedirs(storage_path, exist_ok=True)
     fs = FileSystemStorage(location=storage_path)
     ext = os.path.splitext(image_file.name)[1]
     filename = fs.save(f"{uuid.uuid4()}{ext}", image_file)
-    if not settings.DEBUG and settings.STATIC_ROOT:
-        target_dir = os.path.join(settings.STATIC_ROOT, 'images')
-        os.makedirs(target_dir, exist_ok=True)
-        shutil.copy2(os.path.join(storage_path, filename), os.path.join(target_dir, filename))
-    return f"images/{filename}"
+    return f"media/ads/{filename}"
 
 
 class AdvertisementListView(StaffRequiredMixin, ListView):
@@ -56,7 +51,11 @@ class AdvertisementCreateView(StaffRequiredMixin, CreateView):
         instance = form.save(commit=False)
         image_file = form.cleaned_data.get('image_file')
         if image_file:
-            instance.image_path = _save_image(image_file)
+            try:
+                instance.image_path = _save_image(image_file)
+            except OSError:
+                form.add_error('image_file', "Rasmni saqlab bo'lmadi. Serverdagi media papka huquqlarini tekshiring.")
+                return self.form_invalid(form)
         instance.save()
         messages.success(self.request, "Reklama qo'shildi.")
         return redirect(self.success_url)
@@ -77,7 +76,11 @@ class AdvertisementUpdateView(StaffRequiredMixin, UpdateView):
         instance = form.save(commit=False)
         image_file = form.cleaned_data.get('image_file')
         if image_file:
-            instance.image_path = _save_image(image_file)
+            try:
+                instance.image_path = _save_image(image_file)
+            except OSError:
+                form.add_error('image_file', "Rasmni saqlab bo'lmadi. Serverdagi media papka huquqlarini tekshiring.")
+                return self.form_invalid(form)
         instance.save()
         messages.success(self.request, "Reklama yangilandi.")
         return redirect(self.success_url)

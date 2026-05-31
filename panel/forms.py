@@ -98,3 +98,7 @@ class AdvertisementForm(forms.ModelForm):
         self.fields['image_file'].required = False
         self.fields['image_path'].label = "Rasm URL (ixtiyoriy)"
         self.fields['text'].label = "Matn"
+
+    def clean_image_path(self):
+        image_path = self.cleaned_data.get('image_path')
+        return image_path.strip() if image_path else image_path
