@@ -25,6 +25,17 @@
               Top mahsulot sifatida belgilash
             </label>
           </div>
+          {% elif field.name == 'categories' %}
+          <div class="sm:col-span-2">
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+              {{ field.label }} *
+            </label>
+            {{ field }}
+            <p class="mt-1.5 text-[11px] text-gray-400 font-medium">Bir nechta kategoriya tanlash uchun Ctrl yoki Shift tugmasidan foydalaning.</p>
+            {% if field.errors %}
+              <p class="mt-1.5 text-xs text-red-500 font-semibold">{{ field.errors|join:", " }}</p>
+            {% endif %}
+          </div>
           {% elif field.name == 'description' or field.name == 'image_path' %}
           <div class="sm:col-span-2">
             <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">

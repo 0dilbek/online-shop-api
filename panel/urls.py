@@ -13,6 +13,11 @@ urlpatterns = [
     path('categories/<int:pk>/edit/', views.CategoryUpdateView.as_view(), name='category-edit'),
     path('categories/<int:pk>/delete/', views.CategoryDeleteView.as_view(), name='category-delete'),
 
+    path('ads/', views.AdvertisementListView.as_view(), name='ad-list'),
+    path('ads/create/', views.AdvertisementCreateView.as_view(), name='ad-create'),
+    path('ads/<int:pk>/edit/', views.AdvertisementUpdateView.as_view(), name='ad-edit'),
+    path('ads/<int:pk>/delete/', views.AdvertisementDeleteView.as_view(), name='ad-delete'),
+
     path('products/', views.ProductListView.as_view(), name='product-list'),
     path('products/create/', views.ProductCreateView.as_view(), name='product-create'),
     path('products/<int:pk>/variants/', views.ProductVariantListView.as_view(), name='product-variants'),

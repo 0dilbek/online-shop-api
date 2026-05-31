@@ -1,4 +1,5 @@
 from django import forms
+from ads.models import Advertisement
 from categories.models import Category
 from products.models import Product
 
@@ -50,12 +51,12 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ['name', 'price', 'description', 'category', 'status', 'is_top', 'image_path']
+        fields = ['name', 'price', 'description', 'categories', 'status', 'is_top', 'image_path']
         widgets = {
             'name': forms.TextInput(attrs={'class': _input, 'placeholder': 'Mahsulot nomi'}),
             'price': forms.NumberInput(attrs={'class': _input, 'placeholder': 'Narx (so\'m)'}),
             'description': forms.Textarea(attrs={'class': _input, 'rows': 3, 'placeholder': 'Tavsif (ixtiyoriy)'}),
-            'category': forms.Select(attrs={'class': _select}),
+            'categories': forms.SelectMultiple(attrs={'class': _select, 'size': 10}),
             'status': forms.Select(
                 choices=[('active', 'Faol'), ('inactive', 'Nofaol')],
                 attrs={'class': _select},
@@ -71,4 +72,29 @@ class ProductForm(forms.ModelForm):
         self.fields['image_file'].required = False
         self.fields['description'].label = "Tavsif (ixtiyoriy)"
         self.fields['image_path'].label = "Rasm URL (ixtiyoriy)"
-        self.fields['category'].queryset = Category.objects.select_related('parent').order_by('parent__name', 'name')
+        self.fields['categories'].label = "Kategoriyalar"
+        self.fields['categories'].queryset = Category.objects.select_related('parent').order_by('parent__name', 'name')
+
+
+class AdvertisementForm(forms.ModelForm):
+    image_file = forms.ImageField(
+        required=False,
+        label="Rasm yuklash (ixtiyoriy)",
+        widget=forms.FileInput(attrs={'class': _input, 'accept': 'image/*'})
+    )
+
+    class Meta:
+        model = Advertisement
+        fields = ['title', 'text', 'image_path']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': _input, 'placeholder': 'Reklama sarlavhasi'}),
+            'text': forms.Textarea(attrs={'class': _input, 'rows': 10, 'placeholder': 'Markdown matn'}),
+            'image_path': forms.TextInput(attrs={'class': _input, 'placeholder': 'Rasm yo\'li yoki URL (ixtiyoriy)'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['image_path'].required = False
+        self.fields['image_file'].required = False
+        self.fields['image_path'].label = "Rasm URL (ixtiyoriy)"
+        self.fields['text'].label = "Matn"

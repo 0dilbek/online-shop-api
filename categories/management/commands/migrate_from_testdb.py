@@ -121,7 +121,7 @@ class Command(BaseCommand):
         ).fetchall()
         created = 0
         for row in rows:
-            _, made = Product.objects.update_or_create(
+            product, made = Product.objects.update_or_create(
                 id=row['id'],
                 defaults={
                     'name':        row['name'],
@@ -130,9 +130,9 @@ class Command(BaseCommand):
                     'image_path':  row['image_path'],
                     'is_top':      bool(row['is_top']),
                     'status':      row['status'] or 'active',
-                    'category_id': row['category_id'],
                 }
             )
+            product.categories.set([row['category_id']] if row['category_id'] else [])
             if made:
                 created += 1
         self.stdout.write(f'  products: {len(rows)} ta ({created} yangi)')

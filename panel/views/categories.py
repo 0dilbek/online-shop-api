@@ -42,7 +42,7 @@ class CategoryListView(StaffRequiredMixin, ListView):
     context_object_name = 'categories'
 
     def get_queryset(self):
-        return Category.objects.annotate(product_count=Count('products')).select_related('parent')
+        return Category.objects.annotate(product_count=Count('products', distinct=True)).select_related('parent')
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)

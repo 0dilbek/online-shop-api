@@ -34,7 +34,14 @@
   <div class="flex-1">
     <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">Asosiy mahsulot</p>
     <h2 class="font-black text-[#1e252b] text-lg">{{ main_product.name }}</h2>
-    <p class="text-sm text-gray-500">{{ main_product.category }} · {{ main_product.price|floatformat:0 }} so'm</p>
+    <p class="text-sm text-gray-500">
+      {% for category in main_product.categories.all %}
+        {{ category }}{% if not forloop.last %}, {% endif %}
+      {% empty %}
+        Kategoriya tanlanmagan
+      {% endfor %}
+      · {{ main_product.price|floatformat:0 }} so'm
+    </p>
   </div>
   <a href="{% url 'panel:product-edit' main_product.pk %}"
      class="flex items-center gap-2 bg-[#f4f6f9] hover:bg-[#e8f5ef] hover:text-[#00964b] text-gray-500 text-sm font-bold px-3 py-2 rounded-xl transition-colors">

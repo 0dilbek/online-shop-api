@@ -34,7 +34,7 @@ class Product(models.Model):
     image_path = models.CharField(max_length=300, blank=True, null=True)
     is_top = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
-    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='products')
+    categories = models.ManyToManyField(Category, related_name='products')
     parent = models.ForeignKey(
         'self', null=True, blank=True,
         on_delete=models.CASCADE, related_name='variants'

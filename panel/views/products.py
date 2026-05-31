@@ -36,16 +36,16 @@ class ProductListView(StaffRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        qs = Product.objects.select_related('category__parent').filter(
+        qs = Product.objects.prefetch_related('categories__parent').filter(
             parent__isnull=True
-        ).annotate(variant_count=Count('variants')).order_by('-id')
+        ).annotate(variant_count=Count('variants', distinct=True)).order_by('-id')
         q = self.request.GET.get('q')
         cat = self.request.GET.get('category')
         status = self.request.GET.get('status')
         if q:
             qs = qs.filter(name__icontains=q)
         if cat:
-            qs = qs.filter(category_id=cat)
+            qs = qs.filter(categories__id=cat).distinct()
         if status:
             qs = qs.filter(status=status)
         return qs
@@ -65,11 +65,11 @@ class ProductVariantListView(StaffRequiredMixin, DetailView):
     context_object_name = 'main_product'
 
     def get_queryset(self):
-        return Product.objects.select_related('category').filter(parent__isnull=True)
+        return Product.objects.prefetch_related('categories').filter(parent__isnull=True)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['variants'] = self.object.variants.select_related('category').order_by('id')
+        ctx['variants'] = self.object.variants.prefetch_related('categories').order_by('id')
         return ctx
 
 
@@ -93,6 +93,7 @@ class ProductCreateView(StaffRequiredMixin, CreateView):
         if image_file:
             instance.image_path = _save_image(image_file)
         instance.save()
+        form.save_m2m()
         messages.success(self.request, "Mahsulot muvaffaqiyatli qo'shildi.")
         return redirect(self.get_success_url())
 
@@ -105,6 +106,14 @@ class ProductCreateView(StaffRequiredMixin, CreateView):
         else:
             ctx['title'] = "Yangi mahsulot"
         return ctx
+
+    def get_initial(self):
+        initial = super().get_initial()
+        parent_id = self.request.GET.get('parent')
+        if parent_id:
+            parent = get_object_or_404(Product, pk=parent_id, parent__isnull=True)
+            initial['categories'] = parent.categories.all()
+        return initial
 
 
 class ProductUpdateView(StaffRequiredMixin, UpdateView):
@@ -123,6 +132,7 @@ class ProductUpdateView(StaffRequiredMixin, UpdateView):
         if image_file:
             instance.image_path = _save_image(image_file)
         instance.save()
+        form.save_m2m()
         messages.success(self.request, "Mahsulot yangilandi.")
         return redirect(self.get_success_url())
 

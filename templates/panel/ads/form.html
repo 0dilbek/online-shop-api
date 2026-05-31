@@ -1,0 +1,110 @@
+{% extends 'panel/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}Reklamalar{% endblock %}
+
+{% block header_actions %}
+  <a href="{% url 'panel:ad-list' %}"
+     class="bg-[#f4f6f9] hover:bg-gray-200 text-gray-600 text-sm font-bold px-4 py-2.5 rounded-xl transition-colors">
+    ← Orqaga
+  </a>
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+<style>
+  .EasyMDEContainer .CodeMirror,
+  .editor-toolbar {
+    border-color: #eef0f3;
+  }
+  .EasyMDEContainer .CodeMirror {
+    border-radius: 0 0 12px 12px;
+    min-height: 260px;
+  }
+  .editor-toolbar {
+    border-radius: 12px 12px 0 0;
+    background: #f4f6f9;
+  }
+</style>
+
+<div class="max-w-3xl">
+  <div class="bg-white rounded-2xl border border-gray-100 p-7">
+    <form method="post" enctype="multipart/form-data" class="space-y-5">
+      {% csrf_token %}
+
+      <div>
+        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Sarlavha *</label>
+        {{ form.title }}
+        {% if form.title.errors %}<p class="mt-1.5 text-xs text-red-500 font-semibold">{{ form.title.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Rasm</label>
+        {% if object.image %}
+        <div class="mb-3 flex items-center gap-3">
+          <img src="{{ object.image }}" alt="{{ object.title }}" id="current-img" class="w-20 h-20 rounded-xl object-cover bg-gray-100">
+          <span class="text-xs text-gray-400">Hozirgi rasm</span>
+        </div>
+        {% endif %}
+        <div id="preview-wrap" class="mb-3 hidden">
+          <img id="img-preview" src="" alt="preview" class="w-20 h-20 rounded-xl object-cover bg-gray-100">
+        </div>
+        {{ form.image_file }}
+        {% if form.image_file.errors %}<p class="mt-1.5 text-xs text-red-500 font-semibold">{{ form.image_file.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Rasm URL</label>
+        {{ form.image_path }}
+        {% if form.image_path.errors %}<p class="mt-1.5 text-xs text-red-500 font-semibold">{{ form.image_path.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Matn *</label>
+        {{ form.text }}
+        {% if form.text.errors %}<p class="mt-1.5 text-xs text-red-500 font-semibold">{{ form.text.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button type="submit"
+                class="flex-1 bg-[#00964b] hover:bg-[#008542] text-white font-bold py-3.5 rounded-xl transition-colors">
+          Saqlash
+        </button>
+        <a href="{% url 'panel:ad-list' %}"
+           class="flex-1 text-center bg-[#f4f6f9] hover:bg-gray-200 text-gray-600 font-bold py-3.5 rounded-xl transition-colors">
+          Bekor
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+  const textArea = document.getElementById('id_text');
+  if (textArea) {
+    new EasyMDE({
+      element: textArea,
+      spellChecker: false,
+      status: false,
+      autosave: {
+        enabled: false
+      }
+    });
+  }
+
+  const fileInput = document.querySelector('input[type="file"]');
+  if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const wrap = document.getElementById('preview-wrap');
+      const img = document.getElementById('img-preview');
+      img.src = URL.createObjectURL(file);
+      wrap.classList.remove('hidden');
+      const current = document.getElementById('current-img');
+      if (current) current.classList.add('hidden');
+    });
+  }
+</script>
+{% endblock %}

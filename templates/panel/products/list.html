@@ -89,7 +89,13 @@
             </a>
           </td>
 
-          <td class="px-5 py-3.5 text-gray-500 font-medium text-xs">{{ product.category }}</td>
+          <td class="px-5 py-3.5 text-gray-500 font-medium text-xs">
+            {% for category in product.categories.all %}
+              <span class="inline-block mr-1 mb-1 px-2 py-1 bg-gray-100 rounded-lg">{{ category }}</span>
+            {% empty %}
+              -
+            {% endfor %}
+          </td>
 
           <td class="px-5 py-3.5 font-bold text-[#1e252b] whitespace-nowrap">
             {{ product.price|floatformat:0 }} so'm

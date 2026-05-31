@@ -8,7 +8,7 @@ class ProductListView(ListAPIView):
 
     def get_queryset(self):
         # Faqat asosiy mahsulotlar (variantlar listing da ko'rinmaydi)
-        qs = Product.objects.select_related('category').filter(
+        qs = Product.objects.prefetch_related('categories').filter(
             parent__isnull=True
         ).order_by('id')
 
@@ -17,7 +17,7 @@ class ProductListView(ListAPIView):
         search = self.request.query_params.get('search')
 
         if category_id:
-            qs = qs.filter(category_id=category_id)
+            qs = qs.filter(categories__id=category_id).distinct()
         if is_top is not None:
             qs = qs.filter(is_top=is_top.lower() == 'true')
         if search:
@@ -26,5 +26,5 @@ class ProductListView(ListAPIView):
 
 
 class ProductDetailView(RetrieveAPIView):
-    queryset = Product.objects.select_related('category').prefetch_related('variants')
+    queryset = Product.objects.prefetch_related('categories', 'variants__categories')
     serializer_class = ProductDetailSerializer

@@ -65,20 +65,18 @@ class Command(BaseCommand):
     def _seed_products(self):
         Product.objects.all().delete()
         categories = list(Category.objects.all())
-        products = []
         for cat in categories:
             for _ in range(10):
-                products.append(Product(
+                product = Product.objects.create(
                     name=f"{cat.name} {fake.word().capitalize()}",
                     price=randint(5000, 200000),
                     description=fake.sentence(),
                     status=Product.STATUS_ACTIVE,
                     is_top=choice([True, False]),
-                    category=cat,
                     image_path=f"https://picsum.photos/seed/{randint(1, 10000)}/400/400",
-                ))
-        Product.objects.bulk_create(products)
-        self.stdout.write(f"{len(products)} ta mahsulot yaratildi")
+                )
+                product.categories.set([cat])
+        self.stdout.write(f"{len(categories) * 10} ta mahsulot yaratildi")
 
     def _seed_orders(self):
         OrderItem.objects.all().delete()

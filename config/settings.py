@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'panel',
     'categories',
     'products',
+    'ads',
     'orders',
     'cart',
     'customers',
